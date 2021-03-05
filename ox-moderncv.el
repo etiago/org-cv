@@ -184,15 +184,31 @@ holding export options."
 CONTENTS holds the contents of the headline.  INFO is a plist used
 as a communication channel."
   (let* ((entry (org-cv-utils--parse-cventry headline info))
-         (note (or (org-element-property :NOTE headline) "")))
+         (note (or (org-element-property :NOTE headline) ""))
+         (spacing (alist-get 'spacing entry))
+         (spacing-wrapped (if spacing (concat "[" spacing "]") "")))
 
-    (format "\\cventry{\\textbf{%s}}{%s}{%s}{%s}{%s}{%s}\n"
+    (format "\\cventry%s{\\textbf{%s}}{%s}{%s}{%s}{%s}{%s}\n"
+            spacing-wrapped
             (org-cv-utils--format-time-window (alist-get 'from-date entry)
                                               (alist-get 'to-date entry))
             (alist-get 'title entry)
             (alist-get 'employer entry)
             (alist-get 'location entry)
             note contents)))
+
+(defun org-moderncv--format-cvlanguage (headline contents info)
+  "Format HEADLINE as as cventry.
+CONTENTS holds the contents of the headline.  INFO is a plist used
+as a communication channel."
+  (let* ((entry (org-cv-utils--parse-cvlanguage headline info))
+         (note (or (org-element-property :NOTE headline) "")))
+
+    (format "\\cvlanguage{%s}{%s}{%s}\n"
+            (alist-get 'title entry)
+            (alist-get 'level entry)
+            (alist-get 'comment entry)
+            )))
 
 ;;;; Headline
 (defun org-moderncv-headline (headline contents info)
@@ -206,6 +222,8 @@ as a communication channel."
        ;; is a cv entry
        ((equal environment "cventry")
         (org-moderncv--format-cventry headline contents info))
+       ((equal environment "cvlanguage")
+        (org-moderncv--format-cvlanguage headline contents info))
        ((org-export-with-backend 'latex headline contents info))))))
 
 (provide 'ox-moderncv)

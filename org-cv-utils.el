@@ -64,7 +64,17 @@ as a communication channel."
                       (error "No FROM property provided for cventry %s" title)))
       (to-date . ,(org-element-property :TO headline))
       (employer . ,(org-element-property :EMPLOYER headline))
-      (location . ,(or (org-element-property :LOCATION headline) "")))))
+      (location . ,(or (org-element-property :LOCATION headline) ""))
+      (spacing . ,(org-element-property :SPACING headline)))))
+
+(defun org-cv-utils--parse-cvlanguage (headline info)
+  "Return alist describing the entry
+INFO is a plist used
+as a communication channel."
+  (let ((title (org-export-data (org-element-property :title headline) info)))
+    `((title . ,title)
+      (level . ,(org-element-property :LEVEL headline))
+      (comment . ,(org-element-property :COMMENT headline)))))
 
 (provide 'org-cv-utils)
 ;;; org-cv-utils ends here
